@@ -9,9 +9,9 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "bento/centos-7.3"
-  config.vm.provision "shell", path: "installDocker.sh"
-  config.vm.provision "shell", path: "settingDocker.sh"
-  config.vm.provision "shell", path: "convoy/installConvoy.sh", env: {"CONVOY_VERSION" => CONVOY_VERSION}
+  config.vm.provision "shell", path: "install_docker.sh"
+  config.vm.provision "shell", path: "setting_docker.sh"
+  config.vm.provision "shell", path: "convoy/install_convoy.sh", env: {"CONVOY_VERSION" => CONVOY_VERSION}
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

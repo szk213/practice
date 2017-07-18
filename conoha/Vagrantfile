@@ -1,0 +1,124 @@
+# coding: utf-8
+
+#
+# vagrant-conoha
+#
+# プラグインの設定を行います。おもにConoHa APIに関するものです。
+# コントロールパネルの「API」ページに必要情報があります。
+# https://manage.conoha.jp/API/
+#
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # vagrantがSSH接続する際のユーザ名を指定します。
+  config.ssh.username = 'root'
+
+  # CentOS系など/etc/sudoersにrequirettyが書いてある場合に必要になります。
+  config.ssh.pty      = true
+
+  # ローカルのフォルダをホスト側のフォルダと同期することが出来ます。
+  # 必要に応じてコメントを外してください。
+  # https://www.vagrantup.com/docs/synced-folders/
+  #
+  # config.vm.synced_folder "./src", "/src"
+
+  config.vm.provider :conoha do |conoha|
+    # IdentityEndpointを指定します
+    # 東京以外のリージョンを利用する場合は変更して下さい。
+    conoha.openstack_auth_url = 'https://identity.tyo1.conoha.io/v2.0'
+
+    # APIユーザ名、APIパスワード、テナント名を指定します。
+    # APIユーザー名はgncu、テナント名はgnctなので注意して下さい。
+    conoha.username           = ENV['CONOHA_USER_NAME']
+    conoha.password           = ENV['CONOHA_USER_PASS']
+    conoha.tenant_name        = ENV['CONOHA_TENANT_NAME']
+
+    # VPSのスペックを指定します(g-1gbの場合は1GBプランになります)。
+    # 2017/02/23現在、以下のプランが利用可能です。
+    #
+    # g-512mb
+    # g-1gb
+    # g-2gb
+    # g-4gb
+    # g-8gb
+    # g-16gb
+    # g-32gb
+    # g-64gb
+    #
+    # 最新のプラン一覧はvagrantのopenstackサブコマンドで取得できます。
+    # 以下のコマンドを実行して下さい。
+    #
+    # $ vagrant openstack flavor-list
+    #
+    conoha.flavor             = 'g-1gb'
+
+    # VPSのイメージを指定します。
+    # 最新のイメージ一覧は、vagrantのopenstackサブコマンドで取得できます。
+    # 以下のコマンドを実行してください。
+    #
+    # $ vagrant openstack image-list
+    #
+    conoha.image              = 'vmi-centos-7.3-amd64-unified'
+
+    # リージョンを指定します。
+    # 東京(tyo1)、シンガポール(sin1)、アメリカ(sjc1)から指定して下さい。
+    #
+    # conoha.openstack_auth_urlも忘れずに変更して下さい。
+    conoha.region             = "tyo1"
+
+    # VPSのrootパスワードを設定します。
+    #
+    # 空文字の場合はパスワードは設定されません
+    # その場合コンソールログインは不可になります(SSHの公開鍵認証はログイン可能)
+    conoha.admin_pass         = ""
+
+    # VPSのネームタグを指定します。
+    # コントロールパネル上に表示される名前です。
+    conoha.metadata           = {
+      instance_name_tag: "vagrant_conoha"
+    }
+
+    # セキュリティグループを指定します。
+    #
+    # NOTE: 一度もコントロールパネルからVPSを作成したことがない場合、
+    #       以下のセキュリティグループが無いためエラーになることがあります。
+    #       その場合は、コントロールパネルからVPSを作成して、すぐ削除して
+    #       その後、このプラグインを試して下さい。
+    conoha.security_groups    = [
+      "default",
+      "gncs-ipv4-all",
+      "gncs-ipv6-all"
+    ]
+
+    # SSH公開鍵を指定します。
+    # コントロールパネルの「SSH Key」にある名前を指定して下さい。
+    # config.ssh.private_key_pathもともに指定する必要があります。
+    #
+    # 指定が無い場合は、Vagrantが新しい鍵ペアを自動作成します。
+    #
+    conoha.keypair_name       = "MB15"
+
+    # Vagrantのsynced_folder を使う場合の同期方法を指定します。
+    # 設定できるのは"rsync"と"none"です。特に変更する必要はありません。
+    conoha.sync_method = "rsync"
+
+    # スタートアップスクリプトを指定します。
+    # cloud-config形式、シェルスクリプト形式、どちらでも記述できます。
+    # Base64エンコードする必要はありません。
+    #
+    # 詳細は下記URLを参考にしてください。
+    # https://www.conoha.jp/guide/startupscript.php
+    #
+    # conoha.user_data = ""
+
+  end
+
+  # すでにSSH公開鍵をコントロールパネルに登録している場合は、
+  # ここで秘密鍵のパスを指定します。
+  # keypair_nameとともに指定します。
+  #
+  config.ssh.private_key_path = "~/.ssh/conoha_ed25519"
+end

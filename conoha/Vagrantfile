@@ -25,6 +25,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # config.vm.synced_folder "./src", "/src"
 
+  config.vm.provision "shell", path: "provisioning/install_docker.sh"
+  config.vm.provision "shell", path: "provisioning/settings_docker.sh"
+
   config.vm.provider :conoha do |conoha|
     # IdentityEndpointを指定します
     # 東京以外のリージョンを利用する場合は変更して下さい。
@@ -61,7 +64,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #
     # $ vagrant openstack image-list
     #
-    conoha.image              = 'vmi-centos-7.3-amd64-unified'
+    #conoha.image              = 'vmi-centos-7.3-amd64-unified-20gb'
+    #conoha.image              = 'lvm-docker-host'
+    conoha.image              = 'vagrant-docker'
 
     # リージョンを指定します。
     # 東京(tyo1)、シンガポール(sin1)、アメリカ(sjc1)から指定して下さい。
@@ -89,8 +94,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #       その後、このプラグインを試して下さい。
     conoha.security_groups    = [
       "default",
-      "gncs-ipv4-all",
-      "gncs-ipv6-all"
+      "gncs-ipv4-web",
+      "gncs-ipv4-ssh"
     ]
 
     # SSH公開鍵を指定します。
@@ -99,7 +104,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #
     # 指定が無い場合は、Vagrantが新しい鍵ペアを自動作成します。
     #
-    conoha.keypair_name       = "MB15"
+    #conoha.keypair_name       = "MB15"
 
     # Vagrantのsynced_folder を使う場合の同期方法を指定します。
     # 設定できるのは"rsync"と"none"です。特に変更する必要はありません。
@@ -120,5 +125,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # ここで秘密鍵のパスを指定します。
   # keypair_nameとともに指定します。
   #
-  config.ssh.private_key_path = "~/.ssh/conoha_ed25519"
+  #config.ssh.private_key_path = "~/.ssh/conoha_ed25519"
 end

@@ -1,0 +1,26 @@
+{
+  "name": "typescript-mocha-espower-espower_typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "mocha": "mocha --compilers ts:espower-typescript/guess app/test/*.test.ts",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha -- --compilers ts:espower-typescript/guess app/test/*.test.ts",
+    "posttest": "remap-istanbul -i coverage/coverage.json -o html-report -t html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/mocha": "^2.2.41",
+    "@types/power-assert": "^1.4.29",
+    "espower-typescript": "^8.1.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.0",
+    "power-assert": "^1.4.4",
+    "remap-istanbul": "^0.9.5",
+    "sinon": "^3.2.1",
+    "typescript": "^2.4.2"
+  }
+}

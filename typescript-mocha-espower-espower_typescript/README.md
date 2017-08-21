@@ -1,0 +1,3 @@
+# typescript mocha espower espower-typescriptを使用したテスト環境
+
+espower-typescriptを使用することにより、tsファイルを指定してテストしている
